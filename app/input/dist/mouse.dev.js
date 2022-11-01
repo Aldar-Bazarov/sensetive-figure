@@ -1,9 +1,11 @@
 "use strict";
 
 function handleMouseMove(e) {
-  var x = e.pageX;
-  var y = e.pageY;
-  Mouse.position = new Vector2(x, y);
+  if (Mouse.left.pressed) {
+    var x = e.pageX;
+    var y = e.pageY;
+    Mouse.position = new Vector2(x, y);
+  }
 }
 
 function handleMouseDown(e) {
@@ -16,14 +18,17 @@ function handleMouseDown(e) {
     if (!Mouse.middle.down) Mouse.middle.pressed = true;
     Mouse.middle.down = true;
   } else if (e.which === 3) {
-    if (!Mouse._right.down) Mouse._right.pressed = true;
-    Mouse._right.down = true;
+    if (!Mouse.right.down) Mouse.right.pressed = true;
+    Mouse.right.down = true;
   }
+
+  handleMouseMove(e);
 }
 
 function handleMouseUp(e) {
   handleMouseMove(e);
   if (e.which === 1) Mouse.left.down = false;else if (e.which === 1) Mouse.middle.down = false;else if (e.which === 1) Mouse.right.down = false;
+  handleMouseMove(e);
 }
 
 function MouseHandler() {
