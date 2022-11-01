@@ -24,8 +24,9 @@ function loadAssets(callback) {
         return spriteImage
     }
 
-    sprites.background = loadSprite('spr_background.jpg');
+    sprites.background = loadSprite('spr_background.png')
     sprites.stick = loadSprite('spr_stick.png')
+    sprites.whiteBall = loadSprite('spr_white_ball.png')
 
     assetsLoadingLoop(callback)
 }
