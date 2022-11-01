@@ -8,8 +8,11 @@ function Stick() {
 }
 
 Stick.prototype.update = function () {
-  // Test
-  this.position.x++;
+  this.position = Mouse.position;
+
+  if (Mouse.left.pressed) {
+    console.log("Pressed left!");
+  }
 };
 
 Stick.prototype.draw = function () {

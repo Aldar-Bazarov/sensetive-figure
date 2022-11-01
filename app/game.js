@@ -16,6 +16,7 @@ Game.prototype.mainLoop = function() {
     Canvas.clear();
     FigureGame.gameWorld.update()
     FigureGame.gameWorld.draw()
+    Mouse.reset()
 
     requestAnimationFrame(FigureGame.mainLoop)
 }

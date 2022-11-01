@@ -3,10 +3,11 @@ function Stick() {
 }
 
 Stick.prototype.update = function() {
+    this.position = Mouse.position
 
-
-    // Test
-    this.position.x++
+    if (Mouse.left.pressed) {
+        console.log("Pressed left!");
+    }    
 }
 
 Stick.prototype.draw = function() {
