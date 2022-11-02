@@ -15,13 +15,13 @@ function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.
 function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
 
 function GameWorld() {
-  this.balls = CONSTANT.balls.map(function (ball) {
+  this.balls = CONSTANTS.balls.map(function (ball) {
     return _construct(Ball, _toConsumableArray(ball));
   });
   this.whiteBall = this.balls.find(function (ball) {
     return ball.color === COLOR.WHITE;
   });
-  this.stick = new Stick(new Vector2(413, 413), this.whiteBall.shoot.bind(this.whiteBall));
+  this.stick = new Stick(CONSTANTS.whiteBallInitialPosition, this.whiteBall.shoot.bind(this.whiteBall));
   this.table = {
     TopY: 57,
     RightX: 1443,
@@ -32,6 +32,7 @@ function GameWorld() {
 
 GameWorld.prototype.handleCollisions = function () {
   for (var i = 0; i < this.balls.length; i++) {
+    this.balls[i].handleBallInPocket();
     this.balls[i].collideWithTable(this.table);
 
     for (var j = i + 1; j < this.balls.length; j++) {
@@ -47,7 +48,7 @@ GameWorld.prototype.update = function () {
   this.stick.update();
 
   for (var i = 0; i < this.balls.length; i++) {
-    this.balls[i].update(CONSTANT.delta);
+    this.balls[i].update(CONSTANTS.delta);
   }
 
   if (!this.ballsMoving() && this.stick.shot) {

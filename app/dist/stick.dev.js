@@ -1,12 +1,9 @@
 "use strict";
 
-// const STICK_ORIGIN = new Vector2(970, 11)
-// const STICK_SHOT_ORIGIN = new Vector2(950, 11)
-// const MAX_POWER = 7500
 function Stick(position, onShoot) {
   this.position = position;
   this.rotation = 0;
-  this.origin = CONSTANT.stickOrigin.copy();
+  this.origin = CONSTANTS.stickOrigin.copy();
   this.power = 0;
   this.onShoot = onShoot;
   this.shot = false;
@@ -37,23 +34,23 @@ Stick.prototype.updateRotation = function () {
 };
 
 Stick.prototype.increasePower = function () {
-  if (this.power > CONSTANT.maxPower) {
+  if (this.power > CONSTANTS.maxPower) {
     return;
   }
 
-  this.power += 120;
-  this.origin.x += 3;
+  this.power += CONSTANTS.powerInterval;
+  this.origin.x += CONSTANTS.originXInterval;
 };
 
 Stick.prototype.shoot = function () {
   this.onShoot(this.power, this.rotation);
   this.power = 0;
-  this.origin = CONSTANT.stickShotOrigin.copy();
+  this.origin = CONSTANTS.stickShotOrigin.copy();
   this.shot = true;
 };
 
 Stick.prototype.reposition = function (position) {
   this.position = position.copy();
-  this.origin = CONSTANT.stickOrigin.copy();
+  this.origin = CONSTANTS.stickOrigin.copy();
   this.shot = false;
 };

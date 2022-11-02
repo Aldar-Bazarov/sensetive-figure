@@ -1,8 +1,8 @@
 function GameWorld() {
-    this.balls = CONSTANT.balls.map(ball => new Ball(...ball))
+    this.balls = CONSTANTS.balls.map(ball => new Ball(...ball))
 
     this.whiteBall = this.balls.find(ball => ball.color === COLOR.WHITE)
-    this.stick = new Stick(new Vector2(413, 413), this.whiteBall.shoot.bind(this.whiteBall))
+    this.stick = new Stick(CONSTANTS.whiteBallInitialPosition, this.whiteBall.shoot.bind(this.whiteBall))
 
     this.table = {
         TopY: 57,
@@ -14,6 +14,7 @@ function GameWorld() {
 
 GameWorld.prototype.handleCollisions = function() {
     for (let i = 0; i < this.balls.length; i++) {
+        this.balls[i].handleBallInPocket()
         this.balls[i].collideWithTable(this.table)
         for (let j = i + 1; j < this.balls.length; j++) {
             const firstBall = this.balls[i]
@@ -30,7 +31,7 @@ GameWorld.prototype.update = function () {
     this.stick.update()
 
     for (let i = 0; i < this.balls.length; i++) {
-        this.balls[i].update(CONSTANT.delta)
+        this.balls[i].update(CONSTANTS.delta)
     }
 
     if (!this.ballsMoving() && this.stick.shot) {

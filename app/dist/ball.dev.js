@@ -1,29 +1,35 @@
 "use strict";
 
-// const CONSTANT.ballOrigin = new Vector2(25, 25)
-// const BALL_DIAMETER = 38
-// const BALL_RADIUS = BALL_DIAMETER / 2
 function Ball(position, color) {
   this.position = position;
   this.velocity = new Vector2();
   this.moving = false;
   this.sprite = getBallSpriteByColor(color);
   this.color = color;
+  this.visible = true;
 }
 
 Ball.prototype.update = function (delta) {
+  if (!this.visible) {
+    return;
+  }
+
   this.position.addTo(this.velocity.mult(delta)); // Apply friction
 
-  this.velocity = this.velocity.mult(0.984);
+  this.velocity = this.velocity.mult(1 - CONSTANTS.frictionEnergyLoss);
 
-  if (this.velocity.length() < 5) {
+  if (this.velocity.length() < CONSTANTS.minVelocityLength) {
     this.velocity = new Vector2();
     this.moving = false;
   }
 };
 
 Ball.prototype.draw = function () {
-  Canvas.drawImage(this.sprite, this.position, CONSTANT.ballOrigin = new Vector2(25, 25));
+  if (!this.visible) {
+    return;
+  }
+
+  Canvas.drawImage(this.sprite, this.position, CONSTANTS.ballOrigin);
 };
 
 Ball.prototype.shoot = function (power, rotation) {
@@ -32,17 +38,21 @@ Ball.prototype.shoot = function (power, rotation) {
 };
 
 Ball.prototype.collideWithBall = function (ball) {
-  // Find a normal vector
+  if (!this.visible || !ball.visible) {
+    return;
+  } // Find a normal vector
+
+
   var n = this.position.subtract(ball.position); // Find distance
 
   var dist = n.length();
 
-  if (dist > CONSTANT.ballDiameter) {
+  if (dist > CONSTANTS.ballDiameter) {
     return;
   } // Find minimum translation distance
 
 
-  var mtd = n.mult((CONSTANT.ballDiameter - dist) / dist); // Push-pull balls apart
+  var mtd = n.mult((CONSTANTS.ballDiameter - dist) / dist); // Push-pull balls apart
 
   this.position = this.position.add(mtd.mult(1 / 2));
   ball.position = ball.position.subtract(mtd.mult(1 / 2)); // Find unit normal vector
@@ -52,9 +62,9 @@ Ball.prototype.collideWithBall = function (ball) {
   var ut = new Vector2(-un.y, un.x); // Project velocities onto the unit normal and unit tangent vectors
 
   var v1n = un.dot(this.velocity);
-  var v1t = un.dot(this.velocity);
+  var v1t = ut.dot(this.velocity);
   var v2n = un.dot(ball.velocity);
-  var v2t = un.dot(ball.velocity); // Find new normal velocities
+  var v2t = ut.dot(ball.velocity); // Find new normal velocities
 
   var v1nTag = v2n;
   var v2nTag = v1n; // Convert the scalar normal and tangential velocities into vectors
@@ -71,37 +81,56 @@ Ball.prototype.collideWithBall = function (ball) {
 };
 
 Ball.prototype.collideWithTable = function (table) {
-  if (!this.moving) {
+  if (!this.moving || !this.visible) {
     return;
   }
 
   var collided = false;
 
-  if (this.position.y <= table.TopY + CONSTANT.ballRadius) {
-    this.position.y = table.TopY + CONSTANT.ballRadius;
+  if (this.position.y <= table.TopY + CONSTANTS.ballRadius) {
+    this.position.y = table.TopY + CONSTANTS.ballRadius;
     this.velocity = new Vector2(this.velocity.x, -this.velocity.y);
     collided = true;
   }
 
-  if (this.position.x >= table.RightX - CONSTANT.ballRadius) {
-    this.position.x = table.RightX - CONSTANT.ballRadius;
+  if (this.position.x >= table.RightX - CONSTANTS.ballRadius) {
+    this.position.x = table.RightX - CONSTANTS.ballRadius;
     this.velocity = new Vector2(-this.velocity.x, this.velocity.y);
     collided = true;
   }
 
-  if (this.position.y >= table.BottomY - CONSTANT.ballRadius) {
-    this.position.y = table.BottomY - CONSTANT.ballRadius;
+  if (this.position.y >= table.BottomY - CONSTANTS.ballRadius) {
+    this.position.y = table.BottomY - CONSTANTS.ballRadius;
     this.velocity = new Vector2(this.velocity.x, -this.velocity.y);
     collided = true;
   }
 
-  if (this.position.x <= table.LeftX + CONSTANT.ballRadius) {
-    this.position.x = table.LeftX + CONSTANT.ballRadius;
+  if (this.position.x <= table.LeftX + CONSTANTS.ballRadius) {
+    this.position.x = table.LeftX + CONSTANTS.ballRadius;
     this.velocity = new Vector2(-this.velocity.x, this.velocity.y);
     collided = true;
   }
 
   if (collided) {
-    this.velocity = this.velocity.mult(0.98);
+    this.velocity = this.velocity.mult(1 - CONSTANTS.collisionEnergyLoss);
   }
+};
+
+Ball.prototype.handleBallInPocket = function () {
+  var _this = this;
+
+  if (!this.visible) {
+    return;
+  }
+
+  var inPocket = CONSTANTS.pockets.some(function (pocket) {
+    return _this.position.distFrom(pocket) < CONSTANTS.pocketsRadius;
+  });
+
+  if (!inPocket) {
+    return;
+  }
+
+  this.visible = false;
+  this.moving = false;
 };
