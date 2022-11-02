@@ -1,26 +1,7 @@
-const DELTA = 1 / 177
-
 function GameWorld() {
-    this.balls = [
-        [new Vector2(413, 413), COLOR.WHITE],
-        [new Vector2(1090, 413), COLOR.BLACK],
-        [new Vector2(1022, 413), COLOR.YELLOW],
-        [new Vector2(1056, 393), COLOR.YELLOW],
-        [new Vector2(1090, 452), COLOR.YELLOW],
-        [new Vector2(1126, 354), COLOR.YELLOW],
-        [new Vector2(1126, 433), COLOR.YELLOW],
-        [new Vector2(1162, 413), COLOR.YELLOW],
-        [new Vector2(1162, 491), COLOR.YELLOW],
-        [new Vector2(1056, 433), COLOR.RED],
-        [new Vector2(1090, 374), COLOR.RED],
-        [new Vector2(1126, 393), COLOR.RED],
-        [new Vector2(1126, 472), COLOR.RED],
-        [new Vector2(1162, 335), COLOR.RED],
-        [new Vector2(1162, 374), COLOR.RED],
-        [new Vector2(1162, 452), COLOR.RED]
-    ].map(ball => new Ball(ball[0], ball[1]))
+    this.balls = CONSTANT.balls.map(ball => new Ball(...ball))
 
-    this.whiteBall = this.balls[0]
+    this.whiteBall = this.balls.find(ball => ball.color === COLOR.WHITE)
     this.stick = new Stick(new Vector2(413, 413), this.whiteBall.shoot.bind(this.whiteBall))
 
     this.table = {
@@ -33,11 +14,11 @@ function GameWorld() {
 
 GameWorld.prototype.handleCollisions = function() {
     for (let i = 0; i < this.balls.length; i++) {
-        this.balls[i].collideWith(this.table)
+        this.balls[i].collideWithTable(this.table)
         for (let j = i + 1; j < this.balls.length; j++) {
             const firstBall = this.balls[i]
             const secondBall = this.balls[j]
-            firstBall.collideWith(secondBall)
+            firstBall.collideWithBall(secondBall)
         }
         
     }
@@ -49,7 +30,7 @@ GameWorld.prototype.update = function () {
     this.stick.update()
 
     for (let i = 0; i < this.balls.length; i++) {
-        this.balls[i].update(DELTA)
+        this.balls[i].update(CONSTANT.delta)
     }
 
     if (!this.ballsMoving() && this.stick.shot) {

@@ -1,12 +1,13 @@
-const BALL_ORIGIN = new Vector2(25, 25)
-const BALL_DIAMETER = 38
-const BALL_RADIUS = BALL_DIAMETER / 2
+// const CONSTANT.ballOrigin = new Vector2(25, 25)
+// const BALL_DIAMETER = 38
+// const BALL_RADIUS = BALL_DIAMETER / 2
 
 function Ball(position, color) {
     this.position = position
     this.velocity = new Vector2()
     this.moving = false
     this.sprite = getBallSpriteByColor(color)
+    this.color = color
 }
 
 Ball.prototype.update = function(delta) {
@@ -22,7 +23,7 @@ Ball.prototype.update = function(delta) {
 }
 
 Ball.prototype.draw = function() {
-    Canvas.drawImage(this.sprite, this.position, BALL_ORIGIN)
+    Canvas.drawImage(this.sprite, this.position, CONSTANT.ballOrigin = new Vector2(25, 25))
 }
 
 Ball.prototype.shoot = function(power, rotation) {
@@ -37,12 +38,12 @@ Ball.prototype.collideWithBall = function(ball) {
     // Find distance
     const dist = n.length()
 
-    if (dist > BALL_DIAMETER) {
+    if (dist > CONSTANT.ballDiameter) {
         return
     }
 
     // Find minimum translation distance
-    const mtd = n.mult((BALL_DIAMETER - dist) / dist)
+    const mtd = n.mult((CONSTANT.ballDiameter - dist) / dist)
 
     // Push-pull balls apart
     this.position = this.position.add(mtd.mult(1/2))
@@ -85,33 +86,28 @@ Ball.prototype.collideWithTable = function(table) {
 
     let collided = false
 
-    if (this.position.y <= table.TopY + BALL_RADIUS) {
+    if (this.position.y <= table.TopY + CONSTANT.ballRadius) {
+        this.position.y = table.TopY + CONSTANT.ballRadius
         this.velocity = new Vector2(this.velocity.x, -this.velocity.y)
         collided = true
     }
-    if (this.position.x >= table.RightX - BALL_RADIUS) {
+    if (this.position.x >= table.RightX - CONSTANT.ballRadius) {
+        this.position.x = table.RightX - CONSTANT.ballRadius
         this.velocity = new Vector2(-this.velocity.x, this.velocity.y)
         collided = true
     }
-    if (this.position.y >= table.BottomY - BALL_RADIUS) {
+    if (this.position.y >= table.BottomY - CONSTANT.ballRadius) {
+        this.position.y = table.BottomY - CONSTANT.ballRadius
         this.velocity = new Vector2(this.velocity.x, -this.velocity.y)
         collided = true
     }
-    if (this.position.x <= table.LeftX + BALL_RADIUS) {
+    if (this.position.x <= table.LeftX + CONSTANT.ballRadius) {
+        this.position.x = table.LeftX + CONSTANT.ballRadius
         this.velocity = new Vector2(-this.velocity.x, this.velocity.y)
         collided = true
     }
 
     if (collided) {
         this.velocity = this.velocity.mult(0.98)
-    }
-}
-
-Ball.prototype.collideWith = function(object) {
-    if (object instanceof Ball) {
-        this.collideWithBall(object)
-    }
-    else {
-        this.collideWithTable(object)
     }
 }
