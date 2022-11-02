@@ -1,13 +1,35 @@
-const DELTA = 1/100
+const DELTA = 1 / 100
 
 function GameWorld() {
-    this.whiteBall = new Ball(new Vector2(413, 413))
+    this.balls = [
+        [new Vector2(413, 413), COLOR.WHITE],
+        [new Vector2(1090, 413), COLOR.BLACK],
+        [new Vector2(1022, 413), COLOR.YELLOW],
+        [new Vector2(1056, 393), COLOR.YELLOW],
+        [new Vector2(1090, 452), COLOR.YELLOW],
+        [new Vector2(1126, 354), COLOR.YELLOW],
+        [new Vector2(1126, 433), COLOR.YELLOW],
+        [new Vector2(1162, 413), COLOR.YELLOW],
+        [new Vector2(1162, 491), COLOR.YELLOW],
+        [new Vector2(1056, 433), COLOR.RED],
+        [new Vector2(1090, 374), COLOR.RED],
+        [new Vector2(1126, 393), COLOR.RED],
+        [new Vector2(1126, 472), COLOR.RED],
+        [new Vector2(1162, 335), COLOR.RED],
+        [new Vector2(1162, 374), COLOR.RED],
+        [new Vector2(1162, 452), COLOR.RED]
+    ].map(ball => new Ball(ball[0], ball[1]))
+
+    this.whiteBall = this.balls[0]
     this.stick = new Stick(new Vector2(413, 413), this.whiteBall.shoot.bind(this.whiteBall))
 }
 
-GameWorld.prototype.update = function() {
+GameWorld.prototype.update = function () {
     this.stick.update()
-    this.whiteBall.update(DELTA)
+
+    for (let i = 0; i < this.balls.length; i++) {
+        this.balls[i].update(DELTA)
+    }
 
     if (!this.ballsMoving() && this.stick.shot) {
         // debugger
@@ -15,13 +37,25 @@ GameWorld.prototype.update = function() {
     }
 }
 
-GameWorld.prototype.draw = function() {
-    Canvas.drawImage(sprites.background, {x: 0, y: 0})
+GameWorld.prototype.draw = function () {
+    Canvas.drawImage(sprites.background, { x: 0, y: 0 })
     // Canvas.drawImage(sprites.background, new Vector2(0,0), new Vector2(0,0))
     this.stick.draw()
-    this.whiteBall.draw()
+
+    for (let i = 0; i < this.balls.length; i++) {
+        this.balls[i].draw()
+    }
 }
 
-GameWorld.prototype.ballsMoving = function() {
-    return this.whiteBall.moving
+GameWorld.prototype.ballsMoving = function () {
+    let ballsMoving = false
+
+    for (let i = 0; i < this.balls.length; i++) {
+        if (this.balls[i].moving) {
+            ballsMoving = true
+            break
+        }
+    }
+
+    return ballsMoving
 }
