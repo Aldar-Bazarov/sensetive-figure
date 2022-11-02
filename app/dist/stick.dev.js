@@ -2,6 +2,7 @@
 
 var STICK_ORIGIN = new Vector2(970, 11);
 var STICK_SHOT_ORIGIN = new Vector2(950, 11);
+var MAX_POWER = 7500;
 
 function Stick(position, onShoot) {
   this.position = position;
@@ -33,8 +34,12 @@ Stick.prototype.updateRotation = function () {
 };
 
 Stick.prototype.increasePower = function () {
-  this.power += 100;
-  this.origin.x += 5;
+  if (this.power > MAX_POWER) {
+    return;
+  }
+
+  this.power += 120;
+  this.origin.x += 3;
 };
 
 Stick.prototype.shoot = function () {
