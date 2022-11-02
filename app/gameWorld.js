@@ -22,10 +22,18 @@ function GameWorld() {
 
     this.whiteBall = this.balls[0]
     this.stick = new Stick(new Vector2(413, 413), this.whiteBall.shoot.bind(this.whiteBall))
+
+    this.table = {
+        TopY: 57,
+        RightX: 1443,
+        BottomY: 768,
+        LeftX: 57,
+    }
 }
 
 GameWorld.prototype.handleCollisions = function() {
     for (let i = 0; i < this.balls.length; i++) {
+        this.balls[i].collideWith(this.table)
         for (let j = i + 1; j < this.balls.length; j++) {
             const firstBall = this.balls[i]
             const secondBall = this.balls[j]

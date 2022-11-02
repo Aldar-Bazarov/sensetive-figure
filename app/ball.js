@@ -1,5 +1,6 @@
 const BALL_ORIGIN = new Vector2(25, 25)
 const BALL_DIAMETER = 38
+const BALL_RADIUS = BALL_DIAMETER / 2
 
 function Ball(position, color) {
     this.position = position
@@ -29,7 +30,7 @@ Ball.prototype.shoot = function(power, rotation) {
     this.moving = true
 }
 
-Ball.prototype.collideWith = function(ball) {
+Ball.prototype.collideWithBall = function(ball) {
     // Find a normal vector
     const n = this.position.subtract(ball.position)
 
@@ -75,4 +76,42 @@ Ball.prototype.collideWith = function(ball) {
 
     this.moving = true
     ball.moving = true
+}
+
+Ball.prototype.collideWithTable = function(table) {
+    if (!this.moving) {
+        return
+    }
+
+    let collided = false
+
+    if (this.position.y <= table.TopY + BALL_RADIUS) {
+        this.velocity = new Vector2(this.velocity.x, -this.velocity.y)
+        collided = true
+    }
+    if (this.position.x >= table.RightX - BALL_RADIUS) {
+        this.velocity = new Vector2(-this.velocity.x, this.velocity.y)
+        collided = true
+    }
+    if (this.position.y >= table.BottomY - BALL_RADIUS) {
+        this.velocity = new Vector2(this.velocity.x, -this.velocity.y)
+        collided = true
+    }
+    if (this.position.x <= table.LeftX + BALL_RADIUS) {
+        this.velocity = new Vector2(-this.velocity.x, this.velocity.y)
+        collided = true
+    }
+
+    if (collided) {
+        this.velocity = this.velocity.mult(0.98)
+    }
+}
+
+Ball.prototype.collideWith = function(object) {
+    if (object instanceof Ball) {
+        this.collideWithBall(object)
+    }
+    else {
+        this.collideWithTable(object)
+    }
 }
